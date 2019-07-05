@@ -26,6 +26,8 @@ sub encodebasex($$$)
 #    die $res;
     return $res;
 }
+sub encodebase64($)
+{encodebasex("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", 6, $_[0])}
 sub encodebase32($)
 {encodebasex("abcdefghijklmnopqrstuvwxyz234567", 5, $_[0])}
 sub encodebase16($)
@@ -37,10 +39,7 @@ sub encodebase2($)
     return $res;
 }
 sub decodebase16($)
-{my $x=shift;
-    $x=~s/../chr(hex($&))/ge;
-    return $x;
-}
+{pack("H*", $_[0])}
 
 sub decode($)
 { my $in=shift;
@@ -64,7 +63,9 @@ sub test {
         die if encodebase32("0123") ne "gaytemy";
         die if encodebase32("\x48\x49") ne "jbeq";
         my $d=decode("f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007");
+        die if encode("base64", $d) ne "mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw";
         die if encode("base32", $d) ne "bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby";
+        die if encode("base16", $d) ne "f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007";
         die if encode("base2", "0") ne "0110000";
         die if encode("base2", $d) ne "010010001000001100100111010111110110001000111000011010110000111011100001110000011100100000100111101001011010001001111111011011011101101110100010010101100110100001111001010100001110100000011111011110011110100000100010110010100011000001000111110101110101011010000000000111";
 }

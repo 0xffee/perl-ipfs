@@ -6,6 +6,7 @@ BEGIN{my $dir=$0; $dir=~s!/[^/]*$!!; $dir||=".";
 push @INC, $dir;
 }
 require DataPb;
+require multibase;
 
 # from /home/bernhard/go/pkg/mod/github.com/ipfs/go-unixfs@v0.0.5/pb/unixfs.proto
 # /home/bernhard/go/pkg/mod/github.com/ipfs/go-merkledag@v0.0.3/pb/merkledag.proto
@@ -43,6 +44,6 @@ my $d=`cat /home/emscripten/.ipfs/blocks/AB/CIQMTV6YRYNMHODQOIE6S2E73N3ORFM2DZKD
 
 $d = PBNode->decode($d);
 #print Dumper $d;
-print "CID: f".unpack("H*", $d->Links->[0]->Hash)."\n";
+print "CID: ".multibase::encode("base16",$d->Links->[0]->Hash)."\n";
 print(Dumper(Unixfs::Pb::Data->decode($d->Data)));
 print("data type=", Unixfs::Pb::Data->decode($d->Data)->{Type}, "\n");
