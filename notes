@@ -1,0 +1,12 @@
+https://trello.com/c/9VLyaPM7/367-perl-ipfs
+
+Steps: 
+
+1. make an offline CID tree browser - use perl-Fuse
+should be better than go-ipfs in that it does not download data for ls -l
+maybe even faster?
+
+2. can make go-ipfs API calls for online fetching of missing content
+
+3. implement online functions in perl
+- need dht code for finding the right server to connect to
