@@ -40,7 +40,7 @@ message PBNode {
 # {"Links":[{"Name":"history","Hash":"QmQ2iLtk6rNrzocgZvdhYAeBLaA5zNikdbfHG57dbiggK5","Size":5368640909438},{"Name":"tumbleweed","Hash":"QmQyjGFoj2L7UvJWCBJ4hkCmk9HQicdms8pNbqL7mNFudY","Size":94350582209}],"Data":"\u0008\u0001"}
 # http://localhost:5001/ipfs/QmSDgpiHco5yXdyVTfhKxr3aiJ82ynz8V14QcGKicM3rVh/#/explore/QmbvZYyDrgEBvBEiucpoyUqhbTa6gy9aPBfxcYLT16esDp
 # Links ; Data
-my $d=`cat /home/emscripten/.ipfs/blocks/AB/CIQMTV6YRYNMHODQOIE6S2E73N3ORFM2DZKDUB66PIELFDAR6XK2ABY.data`;
+my $d=`cat $ENV{HOME}/.ipfs/blocks/AB/CIQMTV6YRYNMHODQOIE6S2E73N3ORFM2DZKDUB66PIELFDAR6XK2ABY.data`;
 
 $d = PBNode->decode($d);
 #print Dumper $d;
