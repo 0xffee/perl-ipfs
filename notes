@@ -13,3 +13,12 @@ Would be called with base32 or use python multibase for base58 decoding
 3. implement online functions in perl
 3.1 connect directly to another known server and fetch data
 3.2 need dht code for finding the right server to connect to
+
+
+raw leaf example:
+BAFKREIEM5NFZ5ZNN5XPEPMY6S5OB3EGHHLJHW2YWLIO43AGHYVC6WZNZAM
+=> ~/.ipfs/blocks/ZA/AFKREIEM5NFZ5ZNN5XPEPMY6S5OB3EGHHLJHW2YWLIO43AGHYVC6WZNZAM.data
+
+dag-pb example:
+BCIQMTV6YRYNMHODQOIE6S2E73N3ORFM2DZKDUB66PIELFDAR6XK2ABY
+=> ~/.ipfs/blocks/AB/CIQMTV6YRYNMHODQOIE6S2E73N3ORFM2DZKDUB66PIELFDAR6XK2ABY.data

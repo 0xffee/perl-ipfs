@@ -42,7 +42,7 @@ sub decodebase64($)
 sub encodebase64($)
 {encodebasex("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", 6, $_[0])}
 sub decodebase32($)
-{decodebasex("abcdefghijklmnopqrstuvwxyz234567", 5, $_[0])}
+{decodebasex("abcdefghijklmnopqrstuvwxyz234567", 5, lc($_[0]))}
 sub encodebase32($)
 {encodebasex("abcdefghijklmnopqrstuvwxyz234567", 5, $_[0])}
 sub encodebase16($)
@@ -59,7 +59,8 @@ sub decodebase16($)
 sub decode($)
 { my $in=shift;
     my $t=substr($in, 0, 1, "");
-    my $c=$codecs{$t};
+    my $c=$codecs{lc($t)};
+    if(!$c) {die "unsupported codec $t in $in"}
 #    die "type=$t codec=$c d=$in";
     no strict "refs";
     my $res=&{"decode$c"}($in);

@@ -8,6 +8,7 @@ push @INC, $dir;
 require DataPb;
 require multibase;
 
+# need devel:languages:perl         perl-Google-ProtocolBuffers
 # from /home/bernhard/go/pkg/mod/github.com/ipfs/go-unixfs@v0.0.5/pb/unixfs.proto
 # /home/bernhard/go/pkg/mod/github.com/ipfs/go-merkledag@v0.0.3/pb/merkledag.proto
 Google::ProtocolBuffers->parse("

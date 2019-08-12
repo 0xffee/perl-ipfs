@@ -22,18 +22,30 @@ my $debug=0;
 use strict;
 #use POSIX;
 use Fuse;
+use lib ".";
+require DataPb;
+require Net::IPFS::CID;
+
 sub usage() { die "usage: $0 MNT\n";}
 my $mnt=shift || usage;
 our %cache;
+our $flatfsbase = "$ENV{HOME}/.ipfs/blocks";
 
 sub diag{return unless $debug; print @_} # debug
 
+sub to_flatfs($)
+{ my $f = shift;
+	$f=~s!^/!! or die; # pathes always start with /
+	my $CID = Net::IPFS::CID::decode($f);
+	my $flatfsid = uc(Net::IPFS::CID::encode($CID, "base32"));
+	$flatfsid =~s/^B// or die "internal CID code error";
+	return "$flatfsbase/".substr($flatfsid,-3,2)."/$flatfsid.data";
+}
 
 sub my_getdir($)
 { my($f)=@_;
 	$f=~s{[^/]$}{$&/}; # add trailing slash
-	my $url=path2url($f);
-	diag "getdir: $url\n";
+	diag "getdir: $f\n";
 	my $c="FIXMEcontent";
 	my @ref;
 	foreach my $line ($c=~m/<a href="([^"]+".*)/gi) {
@@ -54,26 +66,31 @@ sub my_getdir($)
 
 sub my_getattr($)
 { my($f)=@_;
+    diag "getattr: $f\n";
     my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks)=(0,0);
 	my $isfile;
-	$cache{$f}||={};
+	#$cache{$f}||={};
 	my $c=$cache{$f};
 	$nlink=1;
 	$uid=$<;
 	($gid)=split / /,$(;
 	$size=0;
 	$rdev=0;
-	$atime=time;
+	$atime=0;
 	$mtime=$atime;
 	if($c) {
 		$size=$c->{size};
-		$mtime=$c->{mtime}||time;
+		$mtime=$c->{mtime}||0;
 		$isfile=1;
 		$mode=0100444; # file
 	   	if($c->{dir}) {
 			$mode=0040555; # dir
 			$isfile=0;
 		}
+	} else {
+		my $path = to_flatfs($f);
+		($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+                    $atime,$mtime,$ctime,$blksize,$blocks)=stat($path);
 	}
 	$size||=0;
 	$ctime=$mtime;
@@ -86,19 +103,19 @@ sub my_getattr($)
 sub my_read($)
 { my($f, $size, $offs)=@_;
 	my $endoffs=$offs+$size-1;
-	my $url=path2url($f);
-	diag "read: $url $f, $size, $offs\n";
+	diag "read: $f, $size, $offs\n";
 	my $r = "FIXME file content"; #$ua->get($url, "Range"=>"bytes=$offs-$endoffs");
-	my $c=$r->content;
-	diag $r->status_line;
-	if($r->code==416) {return ""}
-	if(my $e=checkerror($r->code)) {return $e}
-	return $c;
+	my $path = to_flatfs($f);
+	diag "read translated to $path\n";
+	open(my $fh, "<", $path) or return undef;
+	sysseek($fh, $offs, 0);
+	sysread($fh, $r, $size);
+	return $r;
 }
 
-#my $response = $ua->get("http://localhost/~bernhard/");
-#print $response->status_line, $response->content;
-#exit 0;
+$cache{"/"} = {dir=>1};
+$cache{"/x"} = {size=>5};
+
 Fuse::main(
 	debug=>$debug,
 	mountpoint=>$mnt,
