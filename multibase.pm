@@ -119,27 +119,30 @@ sub encode($$)
     use strict "refs";
     return $rcodecs{$base}.$res;
 }
+sub encode2($$)
+{ my ($char, $data) = @_;
+    encode($codecs{$char}, $data);
+}
+
+sub testbidir($$)
+{ my ($enc, $ref) = @_;
+    die $enc if decode($enc) ne $ref;
+    die $enc if encode2(substr($enc,0,1), $ref) ne $enc;
+}
 
 sub test {
-        die if encodebase32("0123") ne "gaytemy";
-        die if encodebase32("\x48\x49") ne "jbeq";
+        testbidir "bgaytemy", "0123";
+        testbidir "bjbeq", "\x48\x49";
         my $d=decode("f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007");
         #die encode("base16", decode("bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby"));
-        die if decode("zQmbvZYyDrgEBvBEiucpoyUqhbTa6gy9aPBfxcYLT16esDp") ne $d;
-        die if decode("kmuinukkysft1jlj2cfnnbxzr2ffno7sefz9er0vfkxya93zmjkef") ne $d;
-        die if decode("mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw") ne $d;
-        die if decode("bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby") ne $d;
-        die if encode("base58btc", $d) ne "zQmbvZYyDrgEBvBEiucpoyUqhbTa6gy9aPBfxcYLT16esDp";
-        die if encode("base36", $d) ne "kmuinukkysft1jlj2cfnnbxzr2ffno7sefz9er0vfkxya93zmjkef";
-        die if encode("base64", $d) ne "mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw";
-        die if encode("base32", $d) ne "bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby";
-        die if encode("base16", $d) ne "f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007";
-        die if encode("base2", "0") ne "0110000";
-        die if decode("0110000") ne "0";
-        die if encode("base2", $d) ne "010010001000001100100111010111110110001000111000011010110000111011100001110000011100100000100111101001011010001001111111011011011101101110100010010101100110100001111001010100001110100000011111011110011110100000100010110010100011000001000111110101110101011010000000000111";
+        testbidir "zQmbvZYyDrgEBvBEiucpoyUqhbTa6gy9aPBfxcYLT16esDp", $d;
+        testbidir "kmuinukkysft1jlj2cfnnbxzr2ffno7sefz9er0vfkxya93zmjkef", $d;
+        testbidir "mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw", $d;
+        testbidir "bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby", $d;
+        testbidir "f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007", $d;
+        testbidir "010010001000001100100111010111110110001000111000011010110000111011100001110000011100100000100111101001011010001001111111011011011101101110100010010101100110100001111001010100001110100000011111011110011110100000100010110010100011000001000111110101110101011010000000000111", $d;
+        testbidir "0110000", "0";
 }
 test();
-# f4849 = bjbeq
-# f30313233 = bgaytemy
 
 1;
