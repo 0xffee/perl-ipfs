@@ -1,6 +1,6 @@
 package multibase;
 use strict;
-use bigint;
+use Math::BigInt;
 
 our %codecs=qw(
 0 base2
