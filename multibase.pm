@@ -1,5 +1,6 @@
 package multibase;
 use strict;
+use bigint;
 
 our %codecs=qw(
 0 base2
@@ -48,6 +49,21 @@ sub encodebasex($$$)
 #    die $res;
     return $res;
 }
+sub decodebigint($$)
+{ my($alphabet, $enc) = @_;
+    my $nullchar = $alphabet->[0];
+    $enc =~ m/^\Q$nullchar\E*/;
+    my $lead = "\x00" x $+[0];
+    my $out = Math::BigInt->new;
+    my %reval = ();
+    $reval{$_} = keys %reval for @$alphabet;
+    while( $enc ne "" ) { $out = ( $out * @$alphabet ) + $reval{ substr( $enc, 0, 1, "" ) } }
+    return $lead . $out->as_bytes();
+}
+
+sub decodebase58btc($)
+{decodebigint($prefix_alphabets{z}, $_[0])}
+
 sub decodebase64($)
 {decodebasex($prefix_alphabets{m}, 6, $_[0])}
 sub encodebase64($)
@@ -94,6 +110,7 @@ sub test {
         die if encodebase32("\x48\x49") ne "jbeq";
         my $d=decode("f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007");
         #die encode("base16", decode("bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby"));
+        die if decode("zQmbvZYyDrgEBvBEiucpoyUqhbTa6gy9aPBfxcYLT16esDp") ne $d;
         die if decode("mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw") ne $d;
         die if decode("bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby") ne $d;
         die if encode("base64", $d) ne "mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw";
