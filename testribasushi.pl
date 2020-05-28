@@ -33,8 +33,8 @@ sub decode {
   $enc =~ /^\Q@{[ $alphabet->[0] ]}\E*/;
   my $lead = "\x00" x $+[0];
   my $out = Math::BigInt->new;
-  my $reval = {};
-  $reval->{$_} = keys %$reval for @$alphabet;
-  while( $enc ne "" ) { $out = ( $out * @$alphabet ) + $reval->{ substr( $enc, 0, 1, "" ) } }
+  my %reval = ();
+  $reval{$_} = keys %reval for @$alphabet;
+  while( $enc ne "" ) { $out = ( $out * @$alphabet ) + $reval{ substr( $enc, 0, 1, "" ) } }
   return $lead . pack( "H*", $out->as_hex );
 }
