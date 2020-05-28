@@ -60,9 +60,24 @@ sub decodebigint($$)
     while( $enc ne "" ) { $out = ( $out * @$alphabet ) + $reval{ substr( $enc, 0, 1, "" ) } }
     return $lead . $out->as_bytes();
 }
+sub encodebigint($$)
+{ my( $alphabet, $bytes) = @_ ;
+  $bytes =~ /^\0*/;
+  my $lead = $alphabet->[0] x $+[0];
+  my $out = "";
+  my $val = Math::BigInt->from_bytes($bytes);
+  $out = $alphabet->[ ($val->bdiv( 0+@$alphabet ))[1] ] . $out while $val;
+  return $lead . $out;
+}
 
 sub decodebase58btc($)
 {decodebigint($prefix_alphabets{z}, $_[0])}
+sub encodebase58btc($)
+{encodebigint($prefix_alphabets{z}, $_[0])}
+sub decodebase36($)
+{decodebigint($prefix_alphabets{k}, $_[0])}
+sub encodebase36($)
+{encodebigint($prefix_alphabets{k}, $_[0])}
 
 sub decodebase64($)
 {decodebasex($prefix_alphabets{m}, 6, $_[0])}
@@ -111,8 +126,11 @@ sub test {
         my $d=decode("f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007");
         #die encode("base16", decode("bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby"));
         die if decode("zQmbvZYyDrgEBvBEiucpoyUqhbTa6gy9aPBfxcYLT16esDp") ne $d;
+        die if decode("kmuinukkysft1jlj2cfnnbxzr2ffno7sefz9er0vfkxya93zmjkef") ne $d;
         die if decode("mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw") ne $d;
         die if decode("bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby") ne $d;
+        die if encode("base58btc", $d) ne "zQmbvZYyDrgEBvBEiucpoyUqhbTa6gy9aPBfxcYLT16esDp";
+        die if encode("base36", $d) ne "kmuinukkysft1jlj2cfnnbxzr2ffno7sefz9er0vfkxya93zmjkef";
         die if encode("base64", $d) ne "mEiDJ19iOGsO4cHIJ6Wif23bolZoeVDoH3noIsowR9dWgBw";
         die if encode("base32", $d) ne "bciqmtv6yrynmhodqoie6s2e73n3orfm2dzkdub66pielfdar6xk2aby";
         die if encode("base16", $d) ne "f1220c9d7d88e1ac3b8707209e9689fdb76e8959a1e543a07de7a08b28c11f5d5a007";
