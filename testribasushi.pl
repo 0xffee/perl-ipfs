@@ -23,7 +23,7 @@ sub encode {
   $bytes =~ /^\0*/;
   my $lead = $alphabet->[0] x $+[0];
   my $out = "";
-  my $val = hex( unpack( "H*", $bytes ) );
+  my $val = Math::BigInt->from_bytes($bytes);
   $out = $alphabet->[ ($val->bdiv( 0+@$alphabet ))[1] ] . $out while $val;
   return $lead . $out;
 }
@@ -36,5 +36,5 @@ sub decode {
   my %reval = ();
   $reval{$_} = keys %reval for @$alphabet;
   while( $enc ne "" ) { $out = ( $out * @$alphabet ) + $reval{ substr( $enc, 0, 1, "" ) } }
-  return $lead . pack( "H*", $out->as_hex );
+  return $lead . $out->as_bytes;
 }
