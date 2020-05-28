@@ -9,6 +9,9 @@ my $src = "Decentralize everything!!";
 for my $prefix_alphabet (
   [ z => [ grep /[^IOl]/, 1..9,"A".."Z","a".."z" ] ],
   [ k => [ 0..9,"a".."z" ] ],
+  [ m => [ "a".."z", 2..7 ] ],
+  [ f => [ 0..9,"a".."f" ] ],
+  [ 0 => [ 0..1 ] ],
 ) {
   my $enc = $prefix_alphabet->[0] . encode( $src, $prefix_alphabet->[1] );
   my $dec = decode( substr( $enc, 1 ), $prefix_alphabet->[1] );
